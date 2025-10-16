@@ -24,6 +24,8 @@ const levels: Level[] = [
   { id: 3, name: 'Sugar Rush', difficulty: 5, bpm: 180, duration: 40 },
 ];
 
+const DJ_COOKIE_IMAGE = 'https://cdn.poehali.dev/projects/67fcc573-c3e7-4226-9156-87a0f85ff2c9/files/771b44d6-c799-4792-b6d2-3de7b9c15289.jpg';
+
 export default function Index() {
   const [screen, setScreen] = useState<'menu' | 'game' | 'results'>('menu');
   const [selectedLevel, setSelectedLevel] = useState<Level | null>(null);
@@ -221,45 +223,22 @@ export default function Index() {
           </div>
         </div>
 
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 z-20">
-          <div className="w-full h-full rounded-full bg-white/40 backdrop-blur border-8 border-white flex items-center justify-center">
-            <div className="text-6xl">🍪</div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
+          <div className="relative">
+            <img 
+              src={DJ_COOKIE_IMAGE} 
+              alt="DJ Cookie"
+              className="w-64 h-64 object-contain drop-shadow-2xl animate-bounce-in"
+              style={{
+                animation: combo > 5 ? 'bounce 0.5s ease-in-out infinite' : 'none'
+              }}
+            />
+            <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-48 h-8 bg-black/20 rounded-full blur-xl"></div>
           </div>
-          <div className="absolute inset-0 rounded-full border-8 border-yellow-400 animate-pulse-ring pointer-events-none"></div>
-        </div>
-
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          {activeNotes.map((note) => {
-            const progress = (gameTime - (note.timing - 3000)) / 3000;
-            const xPos = -100 + (progress * 200);
-            
-            return (
-              <div
-                key={note.id}
-                className="absolute transition-all duration-100"
-                style={{
-                  left: `${50 + xPos}%`,
-                  top: `${note.position}%`,
-                  transform: 'translate(-50%, -50%)',
-                }}
-              >
-                <div className={`w-20 h-20 rounded-2xl flex items-center justify-center text-4xl note-shadow ${
-                  note.type === 'red' 
-                    ? 'bg-gradient-to-br from-red-400 to-pink-500' 
-                    : 'bg-gradient-to-br from-blue-400 to-cyan-500'
-                }`}>
-                  {note.type === 'red' ? '🔴' : '🔵'}
-                </div>
-              </div>
-            );
-          })}
         </div>
 
         {hitEffect && (
-          <div 
-            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-30 animate-bounce-in pointer-events-none"
-            style={{ marginTop: `${(hitEffect.position - 50) * 3}px` }}
-          >
+          <div className="absolute top-1/3 left-1/2 -translate-x-1/2 z-30 animate-bounce-in pointer-events-none">
             <div className="text-6xl font-bold text-white px-8 py-4 rounded-3xl"
                  style={{ textShadow: '0 4px 20px rgba(0,0,0,0.3)' }}>
               {hitEffect.type}
@@ -267,19 +246,54 @@ export default function Index() {
           </div>
         )}
 
-        <div className="absolute bottom-12 left-0 right-0 flex justify-center gap-12 z-10">
-          <button
-            onClick={() => hitNote('red')}
-            className="w-32 h-32 bg-gradient-to-br from-red-400 to-pink-500 rounded-3xl game-shadow hover:scale-110 active:scale-95 transition-transform flex items-center justify-center text-white text-3xl font-bold border-4 border-white"
-          >
-            D/F
-          </button>
-          <button
-            onClick={() => hitNote('blue')}
-            className="w-32 h-32 bg-gradient-to-br from-blue-400 to-cyan-500 rounded-3xl game-shadow hover:scale-110 active:scale-95 transition-transform flex items-center justify-center text-white text-3xl font-bold border-4 border-white"
-          >
-            J/K
-          </button>
+        <div className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-black/40 to-transparent z-10">
+          <div className="absolute bottom-24 left-0 right-0 h-2 bg-white/30 backdrop-blur"></div>
+          
+          <div className="absolute bottom-0 left-0 right-0 px-4 pb-4">
+            <div className="relative h-20 bg-white/20 backdrop-blur rounded-t-3xl border-4 border-white/40 overflow-hidden">
+              {activeNotes.map((note) => {
+                const progress = (gameTime - (note.timing - 3000)) / 3000;
+                const xPos = progress * 100;
+                
+                return (
+                  <div
+                    key={note.id}
+                    className="absolute top-1/2 -translate-y-1/2 transition-all duration-100"
+                    style={{
+                      left: `${xPos}%`,
+                    }}
+                  >
+                    <div className={`w-16 h-16 rounded-2xl flex items-center justify-center text-3xl note-shadow ${
+                      note.type === 'red' 
+                        ? 'bg-gradient-to-br from-red-400 to-pink-500' 
+                        : 'bg-gradient-to-br from-blue-400 to-cyan-500'
+                    }`}>
+                      {note.type === 'red' ? '🔴' : '🔵'}
+                    </div>
+                  </div>
+                );
+              })}
+              
+              <div className="absolute left-24 top-0 bottom-0 w-1 bg-yellow-400 z-20">
+                <div className="absolute top-1/2 -translate-y-1/2 -left-4 w-8 h-20 border-4 border-yellow-400 rounded-xl animate-pulse"></div>
+              </div>
+            </div>
+          </div>
+
+          <div className="absolute bottom-32 left-0 right-0 flex justify-center gap-12">
+            <button
+              onClick={() => hitNote('red')}
+              className="w-24 h-24 bg-gradient-to-br from-red-400 to-pink-500 rounded-3xl game-shadow hover:scale-110 active:scale-95 transition-transform flex items-center justify-center text-white text-2xl font-bold border-4 border-white"
+            >
+              D/F
+            </button>
+            <button
+              onClick={() => hitNote('blue')}
+              className="w-24 h-24 bg-gradient-to-br from-blue-400 to-cyan-500 rounded-3xl game-shadow hover:scale-110 active:scale-95 transition-transform flex items-center justify-center text-white text-2xl font-bold border-4 border-white"
+            >
+              J/K
+            </button>
+          </div>
         </div>
 
         <Button
